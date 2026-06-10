@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Family Schedule</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <h1>Family Schedule</h1>
+    <div class="right">
+      <span class="who">Signed in as {{ current_user }}</span>
+      <a class="btn" href="{{ url_for('edit', week=week_start) }}">Edit my schedule</a>
+      <a class="btn secondary" href="{{ url_for('password') }}">Password</a>
+      <a class="btn secondary" href="{{ url_for('logout') }}">Log out</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <form class="controls" method="get" action="{{ url_for('board') }}">
+      <label for="week">Week</label>
+      <select id="week" name="week" onchange="this.form.submit()" style="width:auto">
+        {% for value, label in weeks %}
+          <option value="{{ value }}" {% if value == week_start %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <noscript><button class="btn" type="submit">Show</button></noscript>
+    </form>
+
+    {% for user in users %}
+      <section class="person {% if user == current_user %}me{% endif %}">
+        <h2>{{ user }}{% if user == current_user %}<span class="tag">you</span>{% endif %}</h2>
+        <div class="week-grid">
+          {% for d in range(7) %}
+            <div class="daycol">
+              <h3>{{ days[d][:3] }}</h3>
+              {% if schedule[user][d] %}
+                {% for t in schedule[user][d] %}
+                  <div class="task">
+                    <span class="t">{{ t.time }}{% if t.end_time %}–{{ t.end_time }}{% endif %}</span>
+                    <span class="n">{{ t.name }}</span>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <span class="empty">—</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+</body>
+</html>

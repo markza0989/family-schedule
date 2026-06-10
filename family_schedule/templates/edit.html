@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit my schedule</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <h1>Edit — {{ current_user }}</h1>
+    <div class="right">
+      <a class="btn secondary" href="{{ url_for('board', week=week_start) }}">Back to board</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <form method="get" action="{{ url_for('edit') }}" class="controls">
+      <label for="week">Week</label>
+      <select id="week" name="week" onchange="this.form.submit()" style="width:auto">
+        {% for value, label in weeks %}
+          <option value="{{ value }}" {% if value == week_start %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <noscript><button class="btn" type="submit">Switch week</button></noscript>
+    </form>
+
+    <form method="post" action="{{ url_for('edit') }}">
+      <input type="hidden" name="week" value="{{ week_start }}">
+
+      {% for d in range(7) %}
+        <div class="editday">
+          <h3>{{ days[d] }}</h3>
+          {% for slot in slots %}
+            {% set row = existing.get((d, slot)) %}
+            <div class="taskrow">
+              <div class="times">
+                <input type="time" name="time_{{ d }}_{{ slot }}"
+                       aria-label="Start time"
+                       value="{{ row.time if row else '' }}">
+                <span class="dash">–</span>
+                <input type="time" name="end_{{ d }}_{{ slot }}"
+                       aria-label="End time (optional)"
+                       value="{{ row.end_time if row and row.end_time else '' }}">
+              </div>
+              <input type="text" name="name_{{ d }}_{{ slot }}"
+                     placeholder="Task {{ slot + 1 }} (optional)" maxlength="80"
+                     value="{{ row.name if row else '' }}">
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="actions">
+        <button class="btn" type="submit">Save &amp; post</button>
+        <a class="btn secondary" href="{{ url_for('board', week=week_start) }}">Cancel</a>
+      </div>
+      <p style="color:var(--muted);font-size:0.85rem;margin-top:14px">
+        Up to 3 tasks per day. A task is saved only when it has both a start time and a name.
+        End time is optional (leave blank if the task has no fixed end).
+      </p>
+    </form>
+  </div>
+</body>
+</html>

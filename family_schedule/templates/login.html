@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Family Schedule — Sign in</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <form class="login-card" method="post" action="{{ url_for('login') }}">
+      <h1>Family Schedule</h1>
+      {% if error %}<div class="error">{{ error }}</div>{% endif %}
+      <div class="field">
+        <label for="username">Name</label>
+        <select id="username" name="username" required>
+          {% for u in users %}<option value="{{ u }}">{{ u }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+  </div>
+</body>
+</html>
